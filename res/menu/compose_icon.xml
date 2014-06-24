@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android" >
+    <item android:id="@+id/miComposeTweet"
+        android:icon="@drawable/ic_compose_tweet"
+        android:onClick="onComposeClick"
+        android:showAsAction="ifRoom"
+        android:title="Compose" />
+
+</menu>

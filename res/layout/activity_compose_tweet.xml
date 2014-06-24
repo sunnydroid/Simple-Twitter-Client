@@ -1,0 +1,66 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="${packageName}.${activityClass}" >
+
+    <ImageView
+        android:id="@+id/ivUserProfilePicture"
+        android:layout_width="60dp"
+        android:layout_height="60dp"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentTop="true"
+        android:src="@drawable/ic_launcher" />
+
+    <TextView
+        android:id="@+id/tvUsername"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:padding="5dp"
+        android:layout_toRightOf="@+id/ivUserProfilePicture"
+        android:text="@string/user_name_label" />
+
+    <TextView
+        android:id="@+id/tvUserScreenName"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/tvUsername"
+        android:layout_toRightOf="@+id/ivUserProfilePicture"
+        android:text="@string/user_screen_name" />
+
+    <Button
+        android:id="@+id/btnTweet"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentTop="true"
+        android:textColor="@android:color/white"
+        android:background="@android:color/holo_blue_light"
+        android:onClick="postTweet"
+        android:text="@string/tweet_label" />
+
+    <TextView
+        android:id="@+id/tvCharsRemaining"
+        android:maxLength="140"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_toLeftOf="@+id/btnTweet"
+        android:text="@string/remaining_char_label" />
+
+    <EditText
+        android:id="@+id/etTweetText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentRight="true"
+        android:layout_below="@+id/ivUserProfilePicture"
+        android:background="#00000000"
+        android:ems="10"
+        android:maxLength="140" >
+
+        <requestFocus />
+    </EditText>
+
+</RelativeLayout>
