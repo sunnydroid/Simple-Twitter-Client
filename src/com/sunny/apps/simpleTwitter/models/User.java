@@ -1,15 +1,18 @@
 package com.sunny.apps.simpleTwitter.models;
 
+import java.util.List;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import com.activeandroid.Model;
 import com.activeandroid.annotation.Column;
 import com.activeandroid.annotation.Table;
 
 @Table(name = "Users")
-public class User {
-	@Column(name = "id")
-	long id;
+public class User extends Model {
+	@Column(name = "userId", unique = true, onUniqueConflict = Column.ConflictAction.REPLACE)
+	long userId;
 	
 	@Column(name = "name")
 	String name;
@@ -21,7 +24,7 @@ public class User {
 	String imageUrl;
 	
 	public User() {
-		
+		super();
 	}
 
 	/**
@@ -32,7 +35,7 @@ public class User {
 	 */
 	public static User userFromJson(JSONObject json) throws JSONException {
 		User user = new User();
-		user.id = json.getLong("id");
+		user.userId = json.getLong("id");
 		user.name = json.getString("name");
 		user.imageUrl = json.getString("profile_image_url_https");
 		user.screenName = json.getString("screen_name");
@@ -40,13 +43,12 @@ public class User {
 		return user;
 	}
 	
-
-	public long getId() {
-		return id;
+	public long getUserId() {
+		return userId;
 	}
 
-	public void setId(long id) {
-		this.id = id;
+	public void setUserId(long id) {
+		this.userId = id;
 	}
 
 	public String getName() {

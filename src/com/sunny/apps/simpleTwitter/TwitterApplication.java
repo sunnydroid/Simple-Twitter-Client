@@ -2,6 +2,7 @@ package com.sunny.apps.simpleTwitter;
 
 import android.content.Context;
 
+import com.activeandroid.ActiveAndroid;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
@@ -30,9 +31,23 @@ public class TwitterApplication extends com.activeandroid.app.Application {
             .defaultDisplayImageOptions(defaultOptions)
             .build();
         ImageLoader.getInstance().init(config);
+        
+        /* Initialize active android */
+        ActiveAndroid.initialize(this);
     }
     
-    public static TwitterClient getRestClient() {
+    
+    
+    @Override
+	public void onTerminate() {
+		super.onTerminate();
+		/* Dispose Active Android */
+		ActiveAndroid.dispose();
+	}
+
+
+
+	public static TwitterClient getRestClient() {
     	return (TwitterClient) TwitterClient.getInstance(TwitterClient.class, TwitterApplication.context);
     }
 }

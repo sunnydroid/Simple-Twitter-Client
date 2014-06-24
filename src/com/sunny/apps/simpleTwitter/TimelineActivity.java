@@ -1,6 +1,7 @@
 package com.sunny.apps.simpleTwitter;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import org.json.JSONArray;
 
@@ -31,6 +32,7 @@ public class TimelineActivity extends Activity {
 		setContentView(R.layout.activity_timeline);
 		client = TwitterApplication.getRestClient();
 		setupView();
+		fetchPersistedTweets();
 		populateTimeline(0);
 	}
 	
@@ -39,6 +41,10 @@ public class TimelineActivity extends Activity {
 		/* Inflate the custome menu created */
 		getMenuInflater().inflate(R.menu.compose_icon, menu);
 		return true;
+	}
+	
+	private void fetchPersistedTweets() {
+		adapterTweets.addAll(Tweet.getPersistedTweets());
 	}
 	
 	private void setupView() {
@@ -66,7 +72,10 @@ public class TimelineActivity extends Activity {
 			@Override
 			public void onSuccess(JSONArray jsonArray) {
 				Toast.makeText(getApplicationContext(), "fetched timeline", Toast.LENGTH_SHORT).show();
-				adapterTweets.addAll(Tweet.tweetsFromJsonArray(jsonArray));
+				List<Tweet> newTweets = Tweet.tweetsFromJsonArray(jsonArray);
+				/* persist first and then update view from DB to avoid duplicates */
+				Tweet.persistTweets(newTweets);
+				fetchPersistedTweets();
 			}
 			
 			@Override

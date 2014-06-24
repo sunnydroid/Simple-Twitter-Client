@@ -9,25 +9,29 @@ import org.json.JSONObject;
 
 import android.util.Log;
 
+import com.activeandroid.ActiveAndroid;
+import com.activeandroid.Model;
 import com.activeandroid.annotation.Column;
+import com.activeandroid.annotation.Column.ForeignKeyAction;
 import com.activeandroid.annotation.Table;
+import com.activeandroid.query.Select;
 
 @Table(name = "Tweets")
-public class Tweet {
+public class Tweet extends Model {
 	@Column(name = "text")
 	String text;
 
-	@Column(name = "id")
-	long id;
+	@Column(name = "tweetId", unique = true, onUniqueConflict = Column.ConflictAction.REPLACE)
+	Long tweetId;
 
-	@Column(name = "user")
+	@Column(name = "user", onUpdate = ForeignKeyAction.CASCADE, onDelete = ForeignKeyAction.CASCADE)
 	User user;
 
 	@Column(name = "createdAt")
 	String createdAt;
 
 	public Tweet() {
-
+		super();
 	}
 
 	/**
@@ -39,7 +43,7 @@ public class Tweet {
 	public static Tweet tweetFromJson(JSONObject json) throws JSONException {
 		Tweet tweet = new Tweet();
 		tweet.text = json.getString("text");
-		tweet.id = json.getLong("id");
+		tweet.tweetId = json.getLong("id");
 		tweet.createdAt = json.getString("created_at");
 		tweet.user = User.userFromJson(json.getJSONObject("user"));
 
@@ -48,20 +52,44 @@ public class Tweet {
 
 	public static List<Tweet> tweetsFromJsonArray(JSONArray array) {
 		List<Tweet> tweets = new ArrayList<>();
+		
+		ActiveAndroid.beginTransaction();
 
-		for (int i = 0; i < array.length(); i++) {
-			try {
-				Tweet tweet = Tweet.tweetFromJson(array.getJSONObject(i));
-				if(tweet != null) {					
-					tweets.add(tweet);
+		try {			
+			for (int i = 0; i < array.length(); i++) {
+				try {
+					Tweet tweet = Tweet.tweetFromJson(array.getJSONObject(i));
+					if(tweet != null) {					
+						tweets.add(tweet);
+					}
+				} catch (JSONException je) {
+					Log.d("Error", "Error parsing JSON array: " + je.getMessage());
+					continue;
 				}
-			} catch (JSONException je) {
-				Log.d("Error", "Error parsing JSON array: " + je.getMessage());
-				continue;
 			}
+			ActiveAndroid.setTransactionSuccessful();
+		} finally {
+			ActiveAndroid.endTransaction();
 		}
+		
 
 		return tweets;
+	}
+	
+	public static void persistTweets(List<Tweet> tweets) {
+		for(Tweet tweet : tweets) {
+			/* you have to persist all objects that map to a model */
+			tweet.getUser().save();
+			tweet.save();
+		}
+	}
+	
+	public static List<Tweet> getPersistedTweets() {
+		return new Select()
+		.from(Tweet.class)
+		.orderBy("tweetId DESC")
+		.limit(25)
+		.execute();
 	}
 
 	public String getText() {
@@ -72,12 +100,12 @@ public class Tweet {
 		this.text = text;
 	}
 
-	public long getId() {
-		return id;
+	public Long getTweetId() {
+		return tweetId;
 	}
 
-	public void setId(long id) {
-		this.id = id;
+	public void setTweetId(long id) {
+		this.tweetId = id;
 	}
 
 	public User getUser() {
