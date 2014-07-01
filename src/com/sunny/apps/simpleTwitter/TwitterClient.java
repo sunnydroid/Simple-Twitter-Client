@@ -8,6 +8,7 @@ import android.content.Context;
 
 import com.codepath.oauth.OAuthBaseClient;
 import com.loopj.android.http.AsyncHttpResponseHandler;
+import com.loopj.android.http.JsonHttpResponseHandler;
 import com.loopj.android.http.RequestParams;
 
 /*
@@ -48,12 +49,37 @@ public class TwitterClient extends OAuthBaseClient {
     	client.get(apiUrl, null, handler);
     }
     
+    public void getUserDetails(AsyncHttpResponseHandler handler, String userId) {
+    	String apiUrl = getApiUrl("users/show.json");
+    	RequestParams requestParams = new RequestParams();
+    	requestParams.put("user_id", userId);
+    	client.get(apiUrl, requestParams, handler);
+    }
+    
     public void postTweet(AsyncHttpResponseHandler handler, String tweet) {
     	String apiUrl = getApiUrl("statuses/update.json");
     	RequestParams requestParams = new RequestParams();
     	requestParams.put("status", tweet);
     	client.post(apiUrl, requestParams, handler);
     }
+
+	public void getMentionsTimeline(JsonHttpResponseHandler jsonHttpResponseHandler, int id) {
+		String apiUrl = getApiUrl("statuses/mentions_timeline.json");
+    	RequestParams requestParams = new RequestParams();
+    	/* Default request count = 20, each page will have 20 tweets */
+    	Integer since = id;
+    	requestParams.put("since_id", since.toString());
+    	client.get(apiUrl, null, jsonHttpResponseHandler);
+		
+	}
+	
+	public void getUserTimeline(JsonHttpResponseHandler handler, String userId) {
+		String apiUrl = getApiUrl("statuses/user_timeline.json");
+    	RequestParams requestParams = new RequestParams();
+    	requestParams.put("user_id", userId);
+    	client.get(apiUrl, requestParams, handler);
+	}
+
     
     // CHANGE THIS
     // DEFINE METHODS for different API endpoints here

@@ -14,5 +14,6 @@
     <string name="remaining_char_label">140</string>
     <string name="timestamp_label">time stamp</string>
     <string name="name_label">name</string>
+    <string name="title_activity_profile">ProfileActivity</string>
 
 </resources>

@@ -1,39 +1,25 @@
 package com.sunny.apps.simpleTwitter;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import org.json.JSONArray;
-
-import android.app.Activity;
+import android.app.ActionBar;
+import android.app.ActionBar.Tab;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v4.app.FragmentActivity;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.ListView;
-import android.widget.Toast;
 
-import com.activeandroid.util.Log;
-import com.loopj.android.http.JsonHttpResponseHandler;
-import com.sunny.apps.simpleTwitter.adapter.TweetArrayAdapter;
-import com.sunny.apps.simpleTwitter.listener.EndlessScrollListener;
-import com.sunny.apps.simpleTwitter.models.Tweet;
+import com.sunny.apps.fragments.HomeTimelineFragment;
+import com.sunny.apps.fragments.MentionsTimelineFragment;
+import com.sunny.apps.listeners.FragmentTabListener;
 
-public class TimelineActivity extends Activity {
+public class TimelineActivity extends FragmentActivity {
 	
-	private TwitterClient client;
-	private ArrayList<Tweet> tweets;
-	private TweetArrayAdapter adapterTweets;
-	private ListView lvTweets;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_timeline);
-		client = TwitterApplication.getRestClient();
-		setupView();
-		fetchPersistedTweets();
-		populateTimeline(0);
+		setupTabs();
 	}
 	
 	@Override
@@ -43,46 +29,44 @@ public class TimelineActivity extends Activity {
 		return true;
 	}
 	
-	private void fetchPersistedTweets() {
-		adapterTweets.addAll(Tweet.getPersistedTweets());
-	}
-	
-	private void setupView() {
-		lvTweets = (ListView) findViewById(R.id.lvTweets);
-		tweets = new ArrayList<>();
-		adapterTweets = new TweetArrayAdapter(this, tweets);
-		lvTweets.setAdapter(adapterTweets);
-		lvTweets.setOnScrollListener(new EndlessScrollListener() {
-			
-			@Override
-			public void onLoadMore(int page, int totalItemsCount) {
-				populateTimeline(page);
-				
-			}
-		});
-	}
-	
 	public void onComposeClick(MenuItem mi) {
 		Intent i = new Intent(this, ComposeTweetActivity.class);
 		startActivity(i);
 	}
 	
-	public void populateTimeline(int page) {
-		client.getHomeTimeline(new JsonHttpResponseHandler() {
-			@Override
-			public void onSuccess(JSONArray jsonArray) {
-				Toast.makeText(getApplicationContext(), "fetched timeline", Toast.LENGTH_SHORT).show();
-				List<Tweet> newTweets = Tweet.tweetsFromJsonArray(jsonArray);
-				/* persist first and then update view from DB to avoid duplicates */
-				Tweet.persistTweets(newTweets);
-				fetchPersistedTweets();
-			}
-			
-			@Override
-			public void onFailure(Throwable t, String s) {
-				Log.d("error", t.getMessage());
-				Log.d("error", s.toString());
-			}
-		}, page);
+	public void onProfileClick(MenuItem mi) {
+		Intent i = new Intent(this, ProfileActivity.class);
+		startActivity(i);
 	}
+	
+	private void setupTabs() {
+		/* get access to action bar */
+		ActionBar actionBar = getActionBar();
+		actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
+		actionBar.setDisplayShowTitleEnabled(true);
+
+		Tab homeTab = actionBar
+			.newTab()
+			.setText("Home")
+			.setIcon(R.drawable.ic_home)
+			.setTag("HomeTimelineFragment")
+			.setTabListener(
+				new FragmentTabListener<HomeTimelineFragment>(R.id.flContainer, this, "home",
+								HomeTimelineFragment.class));
+
+		actionBar.addTab(homeTab);
+		actionBar.selectTab(homeTab);
+
+		Tab mentionsTab = actionBar
+			.newTab()
+			.setText("Mentions")
+			.setIcon(R.drawable.ic_mentions)
+			.setTag("MentionsTimelineFragment")
+			.setTabListener(
+			    new FragmentTabListener<MentionsTimelineFragment>(R.id.flContainer, this, "mentions",
+			    		MentionsTimelineFragment.class));
+
+		actionBar.addTab(mentionsTab);
+	}
+	
 }

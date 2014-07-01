@@ -4,15 +4,21 @@
     android:layout_height="match_parent"
     tools:context="${packageName}.${activityClass}" >
 
-    <FrameLayout
-        android:id="@+id/flContainer"
+    <RelativeLayout
+        android:id="@+id/rlUserProfile"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
         android:layout_alignParentLeft="true"
-        android:layout_alignParentRight="true"
         android:layout_alignParentTop="true" >
 
-    </FrameLayout>
+    </RelativeLayout>
 
+    <fragment
+        android:id="@+id/frgUserTimeline"
+        android:name="com.sunny.apps.fragments.TweetsListFragment"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_below="@+id/rlUserProfile" />
+   
 </RelativeLayout>

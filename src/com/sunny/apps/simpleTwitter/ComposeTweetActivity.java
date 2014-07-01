@@ -86,6 +86,12 @@ public class ComposeTweetActivity extends Activity {
 		}
 	}
 	
+
+	public void onProfileClick(View v) {
+		Intent i = new Intent(this, ProfileActivity.class);
+		startActivity(i);
+	}
+	
 	private void getUserDetails() {
 		client.getUserDetails(new JsonHttpResponseHandler() {
 			
